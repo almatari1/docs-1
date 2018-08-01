@@ -108,8 +108,21 @@ group Manage Net Debit Cap
                             }
                     end note
                 end
-            PARTICIPANT_HANDLER --> CSAPI: Return status 201
-            CSAPI --> OPERATOR: Return status 201
+            PARTICIPANT_HANDLER --> CSAPI: Return new Limit values and status 200
+                note right of PARTICIPANT_HANDLER #yellow
+                    Message:
+                    {
+                        "currency": "EUR",
+                        "limit": {
+                            "participantLimitId": <number>,
+                            "participantLimitTypeId": <number>,
+                            "type": <string>,
+                            "value": <string>,
+                            "isActive": 1
+                        }
+                    }
+                end note
+            CSAPI --> OPERATOR: Return new Limit values and status 200
 
     else Validate participant (failure)
         note right of PARTICIPANT_HANDLER #red: Validation failure!
