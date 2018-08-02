@@ -1,0 +1,10 @@
+Decisions made by Design Authority regarding the story: 4.2 Design Timeout Handler #301
+
+Frequency: 
+1) Parameterise the value to set the frequency - we need to be able to determine the best setting for this and will probably "play" around with different values to assess the correct value
+
+Storage:
+1) Save the frequency value in the configuration file for the moment. At a later stage we could, if required, create a table for metadata or similiar value types.
+
+Threading:
+1) Run this process in its own thread
