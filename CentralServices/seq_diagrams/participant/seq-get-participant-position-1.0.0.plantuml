@@ -1,0 +1,113 @@
+@startuml
+' declate title
+title 1.0.0 Get Participant Position
+
+autonumber
+
+
+' Actor Keys:
+' boundary - APIs/Interfaces, etc
+' collections - Kafka Topics
+' control - Kafka Consumers
+' entity - Database Access Objects
+' database - Database Persistance Store
+
+' declare actors
+entity "HUB OPERATOR" as OPERATOR
+boundary "Central Service API" as CSAPI
+control "Participant Handler" as PARTICIPANT_HANDLER
+entity "Central Service API" as CSAPI
+entity "Position Facade" as POSITION_DAO
+database "Central Store" as DB
+
+box "Central Services" #LightYellow
+participant CSAPI
+participant PARTICIPANT_HANDLER
+participant POSITION_DAO
+participant DB
+end box
+
+' start flow
+
+activate OPERATOR
+group Get Paritipant Positions
+    OPERATOR -> CSAPI: Request to get positions - GET - /participants/{name}/positions?currency={currencyValue}
+    activate CSAPI
+    CSAPI -> PARTICIPANT_HANDLER: Fetch Limits for Participant
+    activate PARTICIPANT_HANDLER
+    PARTICIPANT_HANDLER -> PARTICIPANT_HANDLER: check if "currency" parameter is sent
+    alt Check if "currency" parameter is sent (Sent)
+        PARTICIPANT_HANDLER ->POSITION_DAO: Fetch Participant position for currency id \n<color #FF0000><b>Error code:</b> 3000</color>
+
+        activate POSITION_DAO
+        POSITION_DAO ->DB: Fetch Participant position for currency id
+        activate DB
+        hnote over DB #lightyellow
+            participantPosition
+            participantCurrency
+        end note
+        DB --> POSITION_DAO: Retrieved Participant position
+        deactivate DB
+        POSITION_DAO -->PARTICIPANT_HANDLER: Return Participant position for currency id
+        deactivate POSITION_DAO
+
+        PARTICIPANT_HANDLER ->CSAPI: Return participant position
+        note right of CSAPI #yellow
+            Message:
+            {
+                currency: <currencyId>,
+                value: <positionValue>,
+                updatedTime: <timestamp>
+            }
+        end note
+
+        CSAPI ->OPERATOR: Return participant position
+    else Check if "currency" parameter is sent (Not Sent)
+        PARTICIPANT_HANDLER ->POSITION_DAO: Fetch Participant position for all currencies \n<color #FF0000><b>Error code:</b> 3000</color>
+
+        activate POSITION_DAO
+        POSITION_DAO ->DB: Fetch Participant position for all currencies
+        activate DB
+        hnote over DB #lightyellow
+            participantPosition
+            participantCurrency
+        end note
+        DB --> POSITION_DAO: Retrieved Participant positions
+        deactivate DB
+        POSITION_DAO -->PARTICIPANT_HANDLER: Return Participant position for all currencies
+        deactivate POSITION_DAO
+
+        PARTICIPANT_HANDLER ->CSAPI: Return participant positions
+        note right of CSAPI #yellow
+            Message:
+            [
+                {
+                    currency: <currencyId>,
+                    value: <positionValue>,
+                    updatedTime: <timestamp>
+                }
+            ]
+        end note
+
+        CSAPI ->OPERATOR: Return participant positions
+
+    else Error
+        PARTICIPANT_HANDLER ->CSAPI: Return error
+            note right of CSAPI #red: Error!
+            note right of CSAPI #yellow
+            Message:
+                {
+                    "errorInformation": {
+                        "errorCode": <Error Code>,
+                        "errorDescription": <Msg>,
+                    }
+                }
+            end note
+        CSAPI ->OPERATOR: Return <color #FF0000><b>Error code:</b> 3000</color>
+    end
+
+    deactivate CSAPI
+    deactivate OPERATOR
+end
+
+@enduml
