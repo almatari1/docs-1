@@ -82,13 +82,11 @@ group Send notification to Participant
         CSAPI --> NOTIFY_HANDLER: Return success
         deactivate CSAPI
     end
-    NOTIFY_HANDLER -> CSAPI: Request Endpoint details for Participant - GET - /participants/{{fsp}}/endpoints\n<color #FF0000><b>Error code:</b> 2003</color>
     note right of NOTIFY_HANDLER #lightgray
-        The endpoint details are cached,
-        when the cache expires, the details
-        are fetched again
-
+        The endpoint details are cached, when the cache
+        expires, the details are fetched again
     end note
+    NOTIFY_HANDLER -> CSAPI: Request Endpoint details for Participant - GET - /participants/{{fsp}}/endpoints\n<color #FF0000><b>Error code:</b> 2003</color>
 
     activate CSAPI
     CSAPI -> PARTICIPANT_DAO: Fetch Endpoint details for Participant\n<color #FF0000><b>Error code:</b> 2003</color>
