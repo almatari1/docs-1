@@ -55,7 +55,7 @@ end box
 
 activate OPERATOR
 group Get Limits for all Participants
-    OPERATOR -> CSAPI: Request to get Limits - GET - /participants/limits?type={typeValue}&currency={currencyValue}
+    OPERATOR -> CSAPI: Request to get Limits - GET - /participants/limits?type={typeValue}&currency={currencyType}
     activate CSAPI
     CSAPI -> PARTICIPANT_HANDLER: Fetch Limits for all Participants
     activate PARTICIPANT_HANDLER
