@@ -42,7 +42,7 @@ actor "DFSP2\nPayee" as DFSP2
 boundary "ML API Adapter" as MLAPI
 control "ML API Notification Event Handler" as NOTIFY_HANDLER
 boundary "Central Service API" as CSAPI
-collections "topic-trasfer-prepare" as TOPIC_TRANSFER_PREPARE
+collections "topic-transfer-prepare" as TOPIC_TRANSFER_PREPARE
 control "Prepare Event Handler" as PREP_HANDLER
 collections "topic-transfer-position" as TOPIC_TRANSFER_POSITION
 control "Position Event Handler" as POS_HANDLER
